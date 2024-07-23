@@ -5,6 +5,7 @@ import (
 	"github.com/fireworq/fireworq/jobqueue"
 	"github.com/fireworq/fireworq/jobqueue/inmemory"
 	"github.com/fireworq/fireworq/jobqueue/mysql"
+	"github.com/fireworq/fireworq/jobqueue/sqlite3"
 	"github.com/fireworq/fireworq/model"
 
 	"github.com/rs/zerolog/log"
@@ -35,6 +36,10 @@ func NewImpl(q *model.Queue) jobqueue.Impl {
 	if driver == "mysql" {
 		log.Info().Msg("Select mysql as a driver for a job queue")
 		impl = mysql.NewPrimaryBackup(q, mysql.Dsn())
+	}
+	if driver == "sqlite3" {
+		log.Info().Msg("Select sqlite3 as a driver for a job queue")
+		impl = sqlite3.New(q, sqlite3.Dsn())
 	}
 	if driver == "in-memory" {
 		log.Info().Msg("Select in-memory as a driver for a job queue")

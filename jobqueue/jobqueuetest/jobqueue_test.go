@@ -21,7 +21,9 @@ func TestRecovering(t *testing.T) {
 	if test.If("driver", "in-memory") { // not supported
 		return
 	}
-
+	if test.If("driver", "sqlite3") { // not supported yet
+		return
+	}
 	name := "jobqueue_recoveringtest"
 
 	jq1 := start(&model.Queue{Name: name, MaxWorkers: 10})

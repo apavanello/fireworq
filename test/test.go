@@ -1,6 +1,7 @@
 package test
 
 import (
+	sqlite3test "github.com/fireworq/fireworq/test/sqlite3"
 	"os"
 	"testing"
 
@@ -16,6 +17,14 @@ func runWithMySQL(block func()) error {
 	return mysqltest.With(dsn, block)
 }
 
+func runWithSQLite3(block func()) error {
+	dsn := config.Get("mysql_dsn")
+	config.Set("repository_mysql_dsn", dsn)
+	config.Set("queue_mysql_dsn", dsn)
+
+	return sqlite3test.With(dsn, block)
+}
+
 // Run runs a TestMain for a single "driver" configuration value.
 func Run(m *testing.M) (int, error) {
 	var status int
@@ -23,6 +32,10 @@ func Run(m *testing.M) (int, error) {
 
 	if config.Get("driver") == "mysql" {
 		err = runWithMySQL(func() {
+			status = m.Run()
+		})
+	} else if config.Get("driver") == "sqlite3" {
+		err = runWithSQLite3(func() {
 			status = m.Run()
 		})
 	} else {
@@ -34,7 +47,7 @@ func Run(m *testing.M) (int, error) {
 
 // RunAll runs a TestMain for all "driver" configuration values.
 func RunAll(m *testing.M) {
-	drivers := []string{"mysql", "in-memory"}
+	drivers := []string{"mysql", "in-memory", "sqlite3"}
 	for _, driver := range drivers {
 		config.Locally("driver", driver, func() {
 			status, err := Run(m)

@@ -1,4 +1,4 @@
-//go:generate go-assets-builder -p mysql -o assets.go ../../data/repository
+//go:generate go-assets-builder -p mysql -o assets.go ../../data/repository/mysql
 
 package mysql
 
